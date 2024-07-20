@@ -8,9 +8,8 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 // Import Route
-const anime = require('./server/api/anime');
-const phonebook = require('./server/api/phonebook');
-const phonebookV2 = require('./server/api/phonebookV2');
+const product = require('./server/api/product');
+const productV2 = require('./server/api/productV2');
 
 // Middleware
 dotenv.config();
@@ -34,9 +33,8 @@ app.use((req, res, next) => {
 });
 
 // Route middlewares
-app.use('/api/v1/anime', anime);
-app.use('/api/v1/phonebook', phonebook);
-app.use('/api/v2/phonebook', phonebookV2);
+app.use('/api/v1/product', product);
+app.use('/api/v2/product', productV2);
 
 app.get('/sys/ping', (req, res) => {
   req.startTime = process.hrtime();

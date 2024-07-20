@@ -5,21 +5,47 @@ const CommonHelper = require('../helpers/CommonHelper');
 
 const prisma = new PrismaClient();
 
-const getListPhonebook = async () => {
+const getProducts = async () => {
   try {
     const timeStart = process.hrtime();
-    const data = await prisma.phonebook.findMany();
+    const data = await prisma.product.findMany();
 
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'getListPhonebook', 'INFO'], {
+    CommonHelper.log(['Prisma', 'getProducts', 'INFO'], {
       message: { timeTaken },
       data
     });
 
     return data;
   } catch (error) {
-    CommonHelper.log(['Database', 'getListPhonebook', 'ERROR'], {
+    CommonHelper.log(['Prisma', 'getProducts', 'ERROR'], {
+      message: `${error}`
+    });
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+const getProduct = async (id) => {
+  try {
+    const timeStart = process.hrtime();
+    const data = await prisma.product.findFirst({
+      where: {
+        id: Number(id)
+      }
+    });
+
+    const timeDiff = process.hrtime(timeStart);
+    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
+    CommonHelper.log(['Prisma', 'getProduct', 'INFO'], {
+      message: { timeTaken },
+      data
+    });
+
+    return data;
+  } catch (error) {
+    CommonHelper.log(['Prisma', 'getProduct', 'ERROR'], {
       message: `${error}`
     });
     throw error;
@@ -28,23 +54,25 @@ const getListPhonebook = async () => {
   }
 };
 
-const addPhonebook = async (name, number) => {
+const addProduct = async (name, brand, price, stock) => {
   try {
     const timeStart = process.hrtime();
-    const data = await prisma.phonebook.create({
+    const data = await prisma.product.create({
       data: {
         name,
-        number
+        brand,
+        price,
+        stock
       }
     });
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'addPhonebook', 'INFO'], {
+    CommonHelper.log(['Prisma', 'addProduct', 'INFO'], {
       message: { timeTaken },
       data
     });
   } catch (error) {
-    CommonHelper.log(['Prisma', 'addPhonebook', 'ERROR'], {
+    CommonHelper.log(['Prisma', 'addProduct', 'ERROR'], {
       message: `${error}`
     });
     throw error;
@@ -53,21 +81,27 @@ const addPhonebook = async (name, number) => {
   }
 };
 
-const editPhonebook = async (id, name, number) => {
+const editProduct = async (id, name, brand, price, stock) => {
   try {
     const timeStart = process.hrtime();
-    const data = await prisma.phonebook.update({
+    const data = await prisma.product.update({
       where: {
-        id: Number(id)
+        id: Number(id),
+        name,
+        brand,
+        price,
+        stock
       },
       data: {
         name,
-        number
+        brand,
+        price,
+        stock
       }
     });
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'editPhonebook', 'INFO'], {
+    CommonHelper.log(['Prisma', 'editProduct', 'INFO'], {
       message: { timeTaken },
       data
     });
@@ -75,14 +109,14 @@ const editPhonebook = async (id, name, number) => {
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
       // Handle the case where the record is not found
-      CommonHelper.log(['Prisma', 'editPhonebook', 'WARN'], {
-        message: `No phonebook entry found with id ${id}`
+      CommonHelper.log(['Prisma', 'editProduct', 'WARN'], {
+        message: `No product entry found with id ${id}`
       });
       return false;
     }
 
     // Log other errors
-    CommonHelper.log(['Prisma', 'editPhonebook', 'ERROR'], {
+    CommonHelper.log(['Prisma', 'editProduct', 'ERROR'], {
       message: `${error}`
     });
     throw error;
@@ -91,17 +125,17 @@ const editPhonebook = async (id, name, number) => {
   }
 };
 
-const deletePhonebook = async (id) => {
+const deleteProduct = async (id) => {
   try {
     const timeStart = process.hrtime();
-    const data = await prisma.phonebook.delete({
+    const data = await prisma.product.delete({
       where: {
         id: Number(id)
       }
     });
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'deletePhonebook', 'INFO'], {
+    CommonHelper.log(['Prisma', 'deleteProduct', 'INFO'], {
       message: { timeTaken },
       data
     });
@@ -109,14 +143,14 @@ const deletePhonebook = async (id) => {
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
       // Handle the case where the record is not found
-      CommonHelper.log(['Prisma', 'deletePhonebook', 'WARN'], {
-        message: `No phonebook entry found with id ${id}`
+      CommonHelper.log(['Prisma', 'deleteProduct', 'WARN'], {
+        message: `No product entry found with id ${id}`
       });
       return false;
     }
 
     // Log other errors
-    CommonHelper.log(['Prisma', 'deletePhonebook', 'ERROR'], {
+    CommonHelper.log(['Prisma', 'deleteProduct', 'ERROR'], {
       message: `${error}`
     });
     throw error;
@@ -125,4 +159,4 @@ const deletePhonebook = async (id) => {
   }
 };
 
-module.exports = { getListPhonebook, addPhonebook, editPhonebook, deletePhonebook };
+module.exports = { getProducts, getProduct, addProduct, editProduct, deleteProduct };

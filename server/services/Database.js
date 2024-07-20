@@ -4,34 +4,34 @@ const CommonHelper = require('../helpers/CommonHelper');
 const connectionPool = MySQL.createPool({
   host: process.env.MYSQL_CONFIG_HOST || 'localhost',
   user: process.env.MYSQL_CONFIG_USER || 'root',
-  password: process.env.MYSQL_CONFIG_PASSWORD || 'password',
-  database: process.env.MYSQL_CONFIG_DATABASE || 'phincon_academy_db',
+  password: process.env.MYSQL_CONFIG_PASSWORD || '',
+  database: process.env.MYSQL_CONFIG_DATABASE || 'store',
   port: Number(process.env.MYSQL_PORT) || 3306,
   connectionLimit: Number(process.env.MYSQL_CONN_LIMIT) || 0
 });
 
-const phoneBookTable = process.env.PHONEBOOK_TABLE || 'phonebook';
+const productTable = process.env.PHONEBOOK_TABLE || 'products';
 
-const getListPhonebook = async () => {
+const getProducts = async () => {
   let connection = null;
   try {
     const timeStart = process.hrtime();
 
     connection = connectionPool && (await connectionPool.getConnection());
-    const [rawResult] = await connection.query(`SELECT * FROM ${phoneBookTable}`);
+    const [rawResult] = await connection.query(`SELECT name,brand,price,stock FROM ${productTable} ORDER BY id ASC`);
     const result = Object.values(JSON.parse(JSON.stringify(rawResult)));
 
     // Log Transaction
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Database', 'getListPhonebook', 'INFO'], {
+    CommonHelper.log(['Database', 'getProducts', 'INFO'], {
       message: { timeTaken },
       result
     });
 
     return result;
   } catch (error) {
-    CommonHelper.log(['Database', 'getListPhonebook', 'ERROR'], {
+    CommonHelper.log(['Database', 'getProducts', 'ERROR'], {
       message: `${error}`
     });
     throw error;
@@ -42,82 +42,27 @@ const getListPhonebook = async () => {
   }
 };
 
-const addPhonebook = async (name, number) => {
+const getProduct = async (id) => {
   let connection = null;
   try {
     const timeStart = process.hrtime();
 
     connection = connectionPool && (await connectionPool.getConnection());
-    const query = `INSERT INTO ${phoneBookTable} (name, number) VALUES (?, ?)`;
-    const values = [name, number];
-    await connection.query(query, values);
-
-    // Log Transaction
-    const timeDiff = process.hrtime(timeStart);
-    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Database', 'getListPhonebook', 'INFO'], {
-      message: { timeTaken }
-    });
-  } catch (error) {
-    CommonHelper.log(['Database', 'getListPhonebook', 'ERROR'], {
-      message: `${error}`
-    });
-    throw error;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
-  }
-};
-
-const editPhonebook = async (id, name, number) => {
-  let connection = null;
-  try {
-    const timeStart = process.hrtime();
-
-    connection = connectionPool && (await connectionPool.getConnection());
-    const query = `UPDATE ${phoneBookTable} SET name = ?, number = ? WHERE id = ?`;
-    const values = [name, number, id];
-    const [result] = await connection.query(query, values);
-
-    // Log Transaction
-    const timeDiff = process.hrtime(timeStart);
-    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Database', 'getListPhonebook', 'INFO'], {
-      message: { timeTaken }
-    });
-    return result?.affectedRows > 0;
-  } catch (error) {
-    CommonHelper.log(['Database', 'getListPhonebook', 'ERROR'], {
-      message: `${error}`
-    });
-    throw error;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
-  }
-};
-
-const deletePhonebook = async (id) => {
-  let connection = null;
-  try {
-    const timeStart = process.hrtime();
-
-    connection = connectionPool && (await connectionPool.getConnection());
-    const query = `DELETE FROM ${phoneBookTable} WHERE id = ?`;
+    const query = `SELECT id,name,brand,price,stock FROM ${productTable} WHERE id = ?`;
     const values = [id];
     const [result] = await connection.query(query, values);
 
     // Log Transaction
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Database', 'getListPhonebook', 'INFO'], {
-      message: { timeTaken }
+    CommonHelper.log(['Database', 'getProduct', 'INFO'], {
+      message: { timeTaken },
+      result
     });
-    return result?.affectedRows > 0;
+
+    return result;
   } catch (error) {
-    CommonHelper.log(['Database', 'getListPhonebook', 'ERROR'], {
+    CommonHelper.log(['Database', 'getProduct', 'ERROR'], {
       message: `${error}`
     });
     throw error;
@@ -128,4 +73,90 @@ const deletePhonebook = async (id) => {
   }
 };
 
-module.exports = { getListPhonebook, addPhonebook, editPhonebook, deletePhonebook };
+const addProduct = async (name, brand, price, stock) => {
+  let connection = null;
+  try {
+    const timeStart = process.hrtime();
+
+    connection = connectionPool && (await connectionPool.getConnection());
+    const query = `INSERT INTO ${productTable} (name, brand, price, stock) VALUES (?, ?, ?, ?)`;
+    const values = [name, brand, price, stock];
+    await connection.query(query, values);
+
+    // Log Transaction
+    const timeDiff = process.hrtime(timeStart);
+    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
+    CommonHelper.log(['Database', 'addProduct', 'INFO'], {
+      message: { timeTaken }
+    });
+  } catch (error) {
+    CommonHelper.log(['Database', 'addProduct', 'ERROR'], {
+      message: `${error}`
+    });
+    throw error;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+const editProduct = async (id, name, brand, price, stock) => {
+  let connection = null;
+  try {
+    const timeStart = process.hrtime();
+
+    connection = connectionPool && (await connectionPool.getConnection());
+    const query = `UPDATE ${productTable} SET name = ?, brand = ?, price = ?, stock = ?, updatedAt = NOW() WHERE id = ?`;
+    const values = [name, brand, price, stock, id];
+    const [result] = await connection.query(query, values);
+
+    // Log Transaction
+    const timeDiff = process.hrtime(timeStart);
+    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
+    CommonHelper.log(['Database', 'editProduct', 'INFO'], {
+      message: { timeTaken }
+    });
+    return result?.affectedRows > 0;
+  } catch (error) {
+    CommonHelper.log(['Database', 'editProduct', 'ERROR'], {
+      message: `${error}`
+    });
+    throw error;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+const deleteProduct = async (id) => {
+  let connection = null;
+  try {
+    const timeStart = process.hrtime();
+
+    connection = connectionPool && (await connectionPool.getConnection());
+    const query = `DELETE FROM ${productTable} WHERE id = ?`;
+    const values = [id];
+    const [result] = await connection.query(query, values);
+
+    // Log Transaction
+    const timeDiff = process.hrtime(timeStart);
+    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
+    CommonHelper.log(['Database', 'deleteProduct', 'INFO'], {
+      message: { timeTaken }
+    });
+    return result?.affectedRows > 0;
+  } catch (error) {
+    CommonHelper.log(['Database', 'deleteProduct', 'ERROR'], {
+      message: `${error}`
+    });
+    throw error;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+module.exports = { getProducts, getProduct, addProduct, editProduct, deleteProduct };

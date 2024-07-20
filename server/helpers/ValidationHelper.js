@@ -1,20 +1,12 @@
 const Joi = require('joi');
 const Boom = require('boom');
 
-const searchAnimeValidation = (data) => {
-  const schema = Joi.object({
-    name: Joi.string().required()
-  });
-
-  if (schema.validate(data).error) {
-    throw Boom.badRequest(schema.validate(data).error);
-  }
-};
-
-const phoneBookValidation = (data) => {
+const productValidation = (data) => {
   const schema = Joi.object({
     name: Joi.string().required(),
-    number: Joi.string().required()
+    brand: Joi.string().required(),
+    price: Joi.number().required(),
+    stock: Joi.number().required()
   });
 
   if (schema.validate(data).error) {
@@ -22,4 +14,14 @@ const phoneBookValidation = (data) => {
   }
 };
 
-module.exports = { searchAnimeValidation, phoneBookValidation };
+const getProductValidation = (data) => {
+  const schema = Joi.object({
+    id: Joi.number().required()
+  });
+
+  if (schema.validate(data).error) {
+    throw Boom.badRequest(schema.validate(data).error);
+  }
+};
+
+module.exports = { productValidation, getProductValidation };
