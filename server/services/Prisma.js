@@ -1,63 +1,52 @@
 const { PrismaClient } = require('@prisma/client');
-const { PrismaClientKnownRequestError } = require('@prisma/client/runtime/library');
 
 const CommonHelper = require('../helpers/CommonHelper');
 
 const prisma = new PrismaClient();
 
-const getProducts = async () => {
+const executePrismaOperation = async (operationName, operationFunction) => {
   try {
     const timeStart = process.hrtime();
-    const data = await prisma.product.findMany();
-
+    const data = await operationFunction();
     const timeDiff = process.hrtime(timeStart);
     const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'getProducts', 'INFO'], {
+    CommonHelper.log(['Prisma', operationName, 'INFO'], {
       message: { timeTaken },
       data
     });
-
+    prisma.$disconnect();
     return data;
   } catch (error) {
-    CommonHelper.log(['Prisma', 'getProducts', 'ERROR'], {
+    prisma.$disconnect();
+    if (error?.code === 'P2025') {
+      // Handle the case where the record is not found
+      CommonHelper.log(['Prisma', operationName, 'WARN'], {
+        message: `No product entry found`
+      });
+      return false;
+    }
+    // Log other errors
+    CommonHelper.log(['Prisma', operationName, 'ERROR'], {
       message: `${error}`
     });
     throw error;
-  } finally {
-    await prisma.$disconnect();
   }
 };
-const getProduct = async (id) => {
-  try {
-    const timeStart = process.hrtime();
-    const data = await prisma.product.findFirst({
+
+const getProducts = async () => executePrismaOperation('getProducts', () => prisma.product.findMany());
+const getProduct = async (id) =>
+  executePrismaOperation('getProduct', async () => {
+    const result = await prisma.product.findFirst({
       where: {
         id: Number(id)
       }
     });
-
-    const timeDiff = process.hrtime(timeStart);
-    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'getProduct', 'INFO'], {
-      message: { timeTaken },
-      data
-    });
-
-    return data;
-  } catch (error) {
-    CommonHelper.log(['Prisma', 'getProduct', 'ERROR'], {
-      message: `${error}`
-    });
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-  }
-};
+    return result;
+  });
 
 const addProduct = async (name, brand, price, stock) => {
-  try {
-    const timeStart = process.hrtime();
-    const data = await prisma.product.create({
+  await executePrismaOperation('addProduct', async () => {
+    await prisma.product.create({
       data: {
         name,
         brand,
@@ -65,32 +54,14 @@ const addProduct = async (name, brand, price, stock) => {
         stock
       }
     });
-    const timeDiff = process.hrtime(timeStart);
-    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'addProduct', 'INFO'], {
-      message: { timeTaken },
-      data
-    });
-  } catch (error) {
-    CommonHelper.log(['Prisma', 'addProduct', 'ERROR'], {
-      message: `${error}`
-    });
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-  }
+  });
 };
 
-const editProduct = async (id, name, brand, price, stock) => {
-  try {
-    const timeStart = process.hrtime();
-    const data = await prisma.product.update({
+const editProduct = async (id, name, brand, price, stock) =>
+  executePrismaOperation('editProduct', async () => {
+    const result = await prisma.product.update({
       where: {
-        id: Number(id),
-        name,
-        brand,
-        price,
-        stock
+        id: Number(id)
       },
       data: {
         name,
@@ -99,64 +70,17 @@ const editProduct = async (id, name, brand, price, stock) => {
         stock
       }
     });
-    const timeDiff = process.hrtime(timeStart);
-    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'editProduct', 'INFO'], {
-      message: { timeTaken },
-      data
-    });
-    return true;
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-      // Handle the case where the record is not found
-      CommonHelper.log(['Prisma', 'editProduct', 'WARN'], {
-        message: `No product entry found with id ${id}`
-      });
-      return false;
-    }
+    return !!result;
+  });
 
-    // Log other errors
-    CommonHelper.log(['Prisma', 'editProduct', 'ERROR'], {
-      message: `${error}`
-    });
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-  }
-};
-
-const deleteProduct = async (id) => {
-  try {
-    const timeStart = process.hrtime();
-    const data = await prisma.product.delete({
+const deleteProduct = async (id) =>
+  executePrismaOperation('deleteProduct', async () => {
+    const result = await prisma.product.delete({
       where: {
         id: Number(id)
       }
     });
-    const timeDiff = process.hrtime(timeStart);
-    const timeTaken = Math.round((timeDiff[0] * 1e9 + timeDiff[1]) / 1e6);
-    CommonHelper.log(['Prisma', 'deleteProduct', 'INFO'], {
-      message: { timeTaken },
-      data
-    });
-    return true;
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-      // Handle the case where the record is not found
-      CommonHelper.log(['Prisma', 'deleteProduct', 'WARN'], {
-        message: `No product entry found with id ${id}`
-      });
-      return false;
-    }
-
-    // Log other errors
-    CommonHelper.log(['Prisma', 'deleteProduct', 'ERROR'], {
-      message: `${error}`
-    });
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-  }
-};
+    return !!result;
+  });
 
 module.exports = { getProducts, getProduct, addProduct, editProduct, deleteProduct };

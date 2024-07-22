@@ -6,6 +6,9 @@ const Database = require('../services/Database');
 const getProducts = async () => {
   try {
     const data = await Database.getProducts();
+    if (data.length === 0) {
+      return Boom.notFound(`Product list not found `);
+    }
     return {
       count: data.length,
       list: data

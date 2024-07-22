@@ -6,6 +6,9 @@ const Prisma = require('../services/Prisma');
 const getProducts = async () => {
   try {
     const data = await Prisma.getProducts();
+    if (data.length === 0) {
+      return Boom.notFound(`Product not found `);
+    }
     return {
       count: data.length,
       list: data
@@ -20,7 +23,7 @@ const getProduct = async (req) => {
   const id = req.params.id;
   try {
     const product = await Prisma.getProduct(id);
-    if (product.length === 0) {
+    if (!product || product.length === 0) {
       return Boom.notFound(`Product with id ${id} not found `);
     }
     return product;
