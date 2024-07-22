@@ -43,12 +43,12 @@ describe('Product CRUD operations', () => {
       expect(releaseMock).toHaveBeenCalled();
     });
 
-    // it('should throw error', async () => {
-    //   const mockError = new Error('Mock error');
-    //   queryMock.mockRejectedValue(mockError);
-    //   await expect(getProducts()).rejects.toThrow(mockError);
-    //   expect(releaseMock).toHaveBeenCalled();
-    // });
+    it('should throw error', async () => {
+      const mockError = new Error('Mock error');
+      queryMock.mockRejectedValue(mockError);
+      await expect(getProducts()).rejects.toThrow(mockError);
+      expect(releaseMock).toHaveBeenCalled();
+    });
   });
 
   describe('getProduct', () => {
