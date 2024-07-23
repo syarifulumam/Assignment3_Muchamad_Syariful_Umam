@@ -18,7 +18,7 @@ My task is to create a RESTful API, according to the given requirements.
     - Postman Collection
 
 ## Deployment
-Deployment using render.com, [demo](https://assignment3-muchamad-syariful-umam.onrender.com/api/)
+Deployment using render.com, [demo](https://assignment3-muchamad-syariful-umam.onrender.com/api/v1/product)
 
 ## Stack
 The tech stack used in building RESTful API includes:
