@@ -36,7 +36,7 @@ const executeQuery = async (query, values = []) => {
 };
 
 const getProducts = async () => {
-  const query = `SELECT name,brand,price,stock FROM ${productTable} ORDER BY id ASC`;
+  const query = `SELECT name, brand, price, stock FROM ${productTable} ORDER BY id ASC`;
   const rawResult = await executeQuery(query);
   return Object.values(JSON.parse(JSON.stringify(rawResult)));
 };
