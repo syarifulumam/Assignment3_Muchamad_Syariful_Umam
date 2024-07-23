@@ -33,12 +33,28 @@ const executePrismaOperation = async (operationName, operationFunction) => {
   }
 };
 
-const getProducts = async () => executePrismaOperation('getProducts', () => prisma.product.findMany());
+const getProducts = async () =>
+  executePrismaOperation('getProducts', () =>
+    prisma.product.findMany({
+      select: {
+        name: true,
+        brand: true,
+        price: true,
+        stock: true
+      }
+    })
+  );
 const getProduct = async (id) =>
   executePrismaOperation('getProduct', async () => {
     const result = await prisma.product.findFirst({
       where: {
         id: Number(id)
+      },
+      select: {
+        name: true,
+        brand: true,
+        price: true,
+        stock: true
       }
     });
     return result;
