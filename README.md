@@ -69,7 +69,7 @@ or
 v2/product/
 ```
 response
-```
+```json
 {
     "status": "00000",
     "message": "Success",
@@ -101,7 +101,7 @@ or
 v2/product/2
 ```
 response
-```
+```json
 {
     "status": "00000",
     "message": "Success",
@@ -124,8 +124,17 @@ v1/product/
 or
 v2/product/
 ```
-response
+body
+```json
+{
+    "name" : "Velocity Red",
+    "brand": "Compass",
+    "price": 598000,
+    "stock": 10
+}
 ```
+response
+```json
 {
     "status": "00000",
     "message": "Success",
@@ -140,8 +149,17 @@ v1/product/17
 or
 v2/product/17
 ```
-response
+body
+```json
+{
+    "name" : "SEPATU SAMBA OG new",
+    "brand": "Adidas new",
+    "price": 2200000,
+    "stock": 10
+}
 ```
+response
+```json
 {
     "status": "00000",
     "message": "Success",
@@ -157,7 +175,7 @@ or
 v2/product/17
 ```
 response
-```
+```json
 {
     "status": "00000",
     "message": "Success",
