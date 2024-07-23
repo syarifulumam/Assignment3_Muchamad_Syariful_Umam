@@ -64,3 +64,102 @@ or
 v2/product/
 ```
 respown
+```
+{
+    "status": "00000",
+    "message": "Success",
+    "data": {
+        "count": 2,
+        "list": [
+            {
+                "name": "Velocity Black Gum",
+                "brand": "Compass",
+                "price": 798000,
+                "stock": 10
+            },
+            {
+                "name": "Retrograde Low Triple Black",
+                "brand": "Compass",
+                "price": 538000,
+                "stock": 10
+            }
+        ]
+    },
+    "transaction_id": "A3022407230902330820"
+}
+```
+![products](https://i.ibb.co.com/5Tbz58T/get-v1.webp)
+GET Products by id
+```
+v1/product/2
+or
+v2/product/2
+```
+respown
+```
+{
+    "status": "00000",
+    "message": "Success",
+    "data": [
+        {
+            "id": 2,
+            "name": "Velocity Black Gum",
+            "brand": "Compass",
+            "price": 798000,
+            "stock": 10
+        }
+    ],
+    "transaction_id": "A3022407230903500030"
+}
+```
+![product](https://i.ibb.co.com/G3L2LFc/get-by-id-v1.webp)
+POST Products
+```
+v1/product/
+or
+v2/product/
+```
+respown
+```
+{
+    "status": "00000",
+    "message": "Success",
+    "data": "Added 'Velocity Red' , 'Compass' , '598000' , '10' to product",
+    "transaction_id": "A3022407230905287070"
+}
+```
+![post](https://i.ibb.co.com/tp1XxfR/post-v1.webp)
+PUT Products
+```
+v1/product/17
+or
+v2/product/17
+```
+respown
+```
+{
+    "status": "00000",
+    "message": "Success",
+    "data": "Edited 'SEPATU SAMBA OG new' , 'Adidas new' , '2200000' , '10' to product",
+    "transaction_id": "A3022407230907341680"
+}
+```
+![put](https://i.ibb.co.com/zFfc4WR/put-v1.webp)
+DELETE Products
+```
+v1/product/17
+or
+v2/product/17
+```
+respown
+```
+{
+    "status": "00000",
+    "message": "Success",
+    "data": "Delete id 17 successfully",
+    "transaction_id": "A3022407230909496940"
+}
+```
+![delete](https://i.ibb.co.com/rZbwMKP/delete-v1.webp)
+![Database](https://i.ibb.co.com/LRWZhV7/Cuplikan-layar-2024-07-22-144022.webp)
+![Diagram](https://i.ibb.co.com/qx2YrQR/API-Diagram-1.webp)
