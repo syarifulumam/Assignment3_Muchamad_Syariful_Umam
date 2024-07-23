@@ -56,6 +56,11 @@ MYSQL_CONFIG_PASSWORD =
 MYSQL_CONFIG_DATABASE =
 MYSQL_PORT =
 ```
+## Unit Test
+```
+npm test
+```
+![unittest](https://i.ibb.co.com/XpyJL5s/unit-test.png)
 ## Usage
 GET Products 
 ```
@@ -63,7 +68,7 @@ v1/product/
 or
 v2/product/
 ```
-respown
+response
 ```
 {
     "status": "00000",
@@ -95,7 +100,7 @@ v1/product/2
 or
 v2/product/2
 ```
-respown
+response
 ```
 {
     "status": "00000",
@@ -119,7 +124,7 @@ v1/product/
 or
 v2/product/
 ```
-respown
+response
 ```
 {
     "status": "00000",
@@ -135,7 +140,7 @@ v1/product/17
 or
 v2/product/17
 ```
-respown
+response
 ```
 {
     "status": "00000",
@@ -151,7 +156,7 @@ v1/product/17
 or
 v2/product/17
 ```
-respown
+response
 ```
 {
     "status": "00000",
